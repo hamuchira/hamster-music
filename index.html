@@ -63,7 +63,6 @@ h2 { font-family: var(--font-display); font-weight: 400; font-size: 18px; margin
 .song input { width: 22px; height: 22px; accent-color: var(--accent); flex: none; }
 .song .t { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .song .t small { display: block; color: var(--muted); font-size: 12px; line-height: 1.4; }
-.song .d { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; flex: none; }
 .song:has(input:checked) { background: var(--accent-soft); }
 .song:has(input:disabled) { opacity: .45; cursor: not-allowed; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
@@ -102,7 +101,6 @@ textarea { min-height: 110px; resize: vertical; }
   <div id="ballot">
     <div class="bar" aria-live="polite">
       <span>選んだ曲 <b id="cnt">0</b> / 15</span>
-      <span>合計 <b id="tot">0:00</b></span>
     </div>
     <div id="groups"></div>
     <form class="card" id="form" autocomplete="off">
@@ -184,8 +182,7 @@ function build() {
       const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "cb-" + s.id; cb.dataset.id = s.id;
       const t = document.createElement("span"); t.className = "t"; t.textContent = s.t;
       const sm = document.createElement("small"); sm.textContent = s.c; t.append(sm);
-      const d = document.createElement("span"); d.className = "d"; d.textContent = fmt(s.s);
-      l.append(cb, t, d); g.append(l);
+      l.append(cb, t); g.append(l);
     }
     groups.append(g);
   }
@@ -197,7 +194,6 @@ function build() {
 }
 function refresh() {
   $("cnt").textContent = picked.size;
-  $("tot").textContent = fmt([...picked].reduce((a, id) => a + byId[id].s, 0));
   const full = picked.size >= MAX;
   document.querySelectorAll("#groups input").forEach(cb => {
     cb.checked = picked.has(cb.dataset.id);
