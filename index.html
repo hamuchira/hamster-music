@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>ハムスターMusicライブ 演奏曲アンケート</title>
+<meta name="description" content="次のハムスターMusicライブで聴きたい曲を選んでください。コメントも送れます。">
+<meta property="og:title" content="ハムスターMusicライブ 演奏曲アンケート">
+<meta property="og:description" content="次のライブで聴きたい曲を15曲まで選んでね。コメントも大歓迎！">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow column, like a setlist sheet. Ballot first, thank-you panel replaces it after sending. */
+:root {
+  --bg: #F2F4FA;
+  --surface: #FFFFFF;
+  --ink: #1A1F3A;
+  --muted: #5C6385;
+  --line: #D9DDEB;
+  --accent: #D63A31;
+  --on-accent: #FFFFFF;
+  --accent-soft: #FBE6E4;
+  --ok: #1F7A4D;
+  --font-display: "Dela Gothic One", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-body: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101326; --surface: #1A1E38; --ink: #F1F2FA; --muted: #9AA1C7; --line: #2C3159;
+    --accent: #FFC247; --on-accent: #1A1F3A; --accent-soft: #3A3350; --ok: #6FD19A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101326; --surface: #1A1E38; --ink: #F1F2FA; --muted: #9AA1C7; --line: #2C3159;
+  --accent: #FFC247; --on-accent: #1A1F3A; --accent-soft: #3A3350; --ok: #6FD19A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.7;
+  padding-block: 28px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(26px, 7vw, 38px); line-height: 1.25; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-weight: 400; font-size: 18px; margin: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; color: var(--accent); font-weight: 700; margin: 0 0 6px; }
+.lead { margin: 10px 0 0; color: var(--muted); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+#ballot, #groups { display: flex; flex-direction: column; gap: 22px; }
+.group { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.group header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.group header span { color: var(--muted); font-size: 13px; }
+.song { display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; border-bottom: 1px solid var(--line); min-width: 0; }
+.song:last-child { border-bottom: 0; }
+.song input { width: 22px; height: 22px; accent-color: var(--accent); flex: none; }
+.song .t { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.song .t small { display: block; color: var(--muted); font-size: 12px; line-height: 1.4; }
+.song .d { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; flex: none; }
+.song:has(input:checked) { background: var(--accent-soft); }
+.song:has(input:disabled) { opacity: .45; cursor: not-allowed; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 14px; }
+input[type=text], textarea { font: inherit; font-weight: 400; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; }
+textarea { min-height: 110px; resize: vertical; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding: 8px 0; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+.bar b { font-variant-numeric: tabular-nums; }
+.primary { font: inherit; font-weight: 700; border: 0; background: var(--accent); color: var(--on-accent); padding: 12px 22px; border-radius: 12px; cursor: pointer; align-self: flex-start; }
+.primary:disabled { opacity: .5; cursor: not-allowed; }
+.ghost { font: inherit; font-weight: 700; border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 10px 18px; border-radius: 12px; cursor: pointer; align-self: flex-start; }
+.msg { margin: 0; font-weight: 700; color: var(--ok); }
+.msg.err { color: var(--accent); }
+.note { color: var(--muted); font-size: 13px; margin: 0; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.thanks { background: var(--accent); color: var(--on-accent); border-radius: 16px; padding: 28px 22px; display: flex; flex-direction: column; gap: 14px; }
+.thanks h2 { font-size: clamp(22px, 6vw, 30px); line-height: 1.4; text-wrap: balance; }
+.thanks p { margin: 0; }
+.thanks .ghost { background: transparent; color: var(--on-accent); border-color: currentColor; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">HAMSTER MUSIC LIVE</p>
+    <h1>次のライブで聴きたい曲を選んでね</h1>
+    <p class="lead">新CDの全曲は演奏が決まっています。ここでは、これまでに公開した曲から「今回も聴きたい曲」を選んでください。選べるのは15曲までです。</p>
+  </header>
+
+  <section class="thanks" id="thanks" role="status" tabindex="-1" hidden>
+    <h2>投票ありがとうございました！<br>ハムスターMusicライブをお楽しみに！</h2>
+    <p>コメントもしっかり読ませてもらいます。選び直したいときは、下のボタンから送り直せます。</p>
+    <button class="ghost" id="redo" type="button">回答を選び直す</button>
+  </section>
+
+  <div id="ballot">
+    <div class="bar" aria-live="polite">
+      <span>選んだ曲 <b id="cnt">0</b> / 15</span>
+      <span>合計 <b id="tot">0:00</b></span>
+    </div>
+    <div id="groups"></div>
+    <form class="card" id="form" autocomplete="off">
+      <label class="f" for="nick">ニックネーム（任意）<input type="text" id="nick" maxlength="30" placeholder="例：ふろまーじゅ推し"></label>
+      <label class="f" for="comment">コメント（任意）<textarea id="comment" maxlength="1000" placeholder="この曲が好き、この曲で泣いた、思い出の曲、聴きたい理由など、なんでも書いてね"></textarea></label>
+      <div class="hp" aria-hidden="true"><label for="hp">この欄は空のままにしてください<input type="text" id="hp" tabindex="-1" autocomplete="off"></label></div>
+      <button class="primary" id="submit" type="submit" disabled>投票する</button>
+      <p class="msg" id="status" role="status"></p>
+      <p class="note">投票結果は公開されません。ニックネームは名前の代わりに集計用として保存されます。</p>
+    </form>
+  </div>
+</main>
+
+<script>
+/* 投票の送信先（Google Apps Script のウェブアプリURL）。README.md の手順で取得して貼り付けます。 */
+const ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";
+const MAX = 15;
+// SONGS-START
+const SONGS = [
+  {cd:"キズナ（関係）", id:"k1", t:"空の下の約束-忘れないで、笑ってて", c:"こふれ", s:122},
+  {cd:"キズナ（関係）", id:"k2", t:"空の下の約束-想い続ける、その日まで", c:"ホワイトモカ", s:98},
+  {cd:"キズナ（関係）", id:"k3", t:"小娘から母へ", c:"コレット", s:250},
+  {cd:"キズナ（関係）", id:"k4", t:"まだそこにいて", c:"ねむりーの", s:419},
+  {cd:"キズナ（関係）", id:"k5", t:"巣立ちの朝", c:"とわれ", s:230},
+  {cd:"キズナ（関係）", id:"k6", t:"手を伸ばせばそこに -Side S", c:"すふれ", s:277},
+  {cd:"キズナ（関係）", id:"k7", t:"手を伸ばせばそこに -Side C", c:"カフェモカ", s:261},
+  {cd:"キズナ（関係）", id:"k8", t:"ママは私だけのもの", c:"まどれーぬ", s:261},
+  {cd:"キズナ（関係）", id:"k9", t:"真ん中の温度", c:"ソイラテ", s:281},
+  {cd:"カオス（世界）", id:"c1", t:"びち太の数え歌 short ver.", c:"びち太", s:28},
+  {cd:"カオス（世界）", id:"c2", t:"びち太の数え歌 long ver.", c:"びち太", s:109},
+  {cd:"カオス（世界）", id:"c3", t:"僕の方が変態だ", c:"くれーぷ", s:172},
+  {cd:"カオス（世界）", id:"c4", t:"フタパカを継ぎし者", c:"しゅぜっと", s:212},
+  {cd:"カオス（世界）", id:"c5", t:"パパイヤ", c:"しゅくれ", s:223},
+  {cd:"カオス（世界）", id:"c6", t:"奪ってないよ、くれたんだよ", c:"カフェオレ", s:186},
+  {cd:"カオス（世界）", id:"c7", t:"土管娘の美容法", c:"さぶれ", s:181},
+  {cd:"カオス（世界）", id:"c8", t:"お姉ちゃんにあげる", c:"かぬれ", s:127},
+  {cd:"カオス（世界）", id:"c9", t:"私だっていらない", c:"のえる", s:139},
+  {cd:"ジブン（個）", id:"j1", t:"アマレッティ・ヤバレッティ", c:"アマレッティ", s:79},
+  {cd:"ジブン（個）", id:"j2", t:"アマレッティ・ヤバレッティ -reヤバ-", c:"アマレッティ", s:89},
+  {cd:"ジブン（個）", id:"j3", t:"シゴデキ遺伝子を即注入☆", c:"ブラウニー", s:187},
+  {cd:"ジブン（個）", id:"j4", t:"Let’sハムササイズ", c:"しふぉん", s:196},
+  {cd:"ジブン（個）", id:"j5", t:"たこ焼きわっふる", c:"わっふる", s:133},
+  {cd:"ジブン（個）", id:"j6", t:"可愛いは作れる", c:"マキアート", s:120},
+  {cd:"ジブン（個）", id:"j7", t:"アイデンティティがクライシス", c:"ぱるふぇ", s:224},
+  {cd:"ジブン（個）", id:"j8", t:"一歩だけでえいゆう -real-", c:"らすく", s:215},
+  {cd:"ジブン（個）", id:"j9", t:"一歩だけでえいゆう -ideal-", c:"らすく", s:219},
+  {cd:"ジブン（個）", id:"j10", t:"宇宙でみんなと交信中", c:"ドルチェ", s:191}
+];
+// SONGS-END
+const byId = Object.fromEntries(SONGS.map(s => [s.id, s]));
+const $ = id => document.getElementById(id);
+const fmt = s => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+const picked = new Set();
+let busy = false, token = "";
+
+/* 端末ごとの目印と前回の回答。同じ端末から送り直すと、スプレッドシート側で上書きされます。 */
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+function makeToken() {
+  try { if (crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+  return "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+}
+token = store.get("hamulive_token") || makeToken();
+store.set("hamulive_token", token);
+
+function build() {
+  const groups = $("groups");
+  for (const cd of [...new Set(SONGS.map(s => s.cd))]) {
+    const list = SONGS.filter(s => s.cd === cd);
+    const g = document.createElement("div"); g.className = "group";
+    const h = document.createElement("header");
+    const h2 = document.createElement("h2"); h2.textContent = cd;
+    const sp = document.createElement("span"); sp.textContent = list.length + "曲";
+    h.append(h2, sp); g.append(h);
+    for (const s of list) {
+      const l = document.createElement("label"); l.className = "song"; l.htmlFor = "cb-" + s.id;
+      const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "cb-" + s.id; cb.dataset.id = s.id;
+      const t = document.createElement("span"); t.className = "t"; t.textContent = s.t;
+      const sm = document.createElement("small"); sm.textContent = s.c; t.append(sm);
+      const d = document.createElement("span"); d.className = "d"; d.textContent = fmt(s.s);
+      l.append(cb, t, d); g.append(l);
+    }
+    groups.append(g);
+  }
+  groups.addEventListener("change", e => {
+    const id = e.target.dataset.id; if (!id) return;
+    if (e.target.checked) picked.add(id); else picked.delete(id);
+    refresh();
+  });
+}
+function refresh() {
+  $("cnt").textContent = picked.size;
+  $("tot").textContent = fmt([...picked].reduce((a, id) => a + byId[id].s, 0));
+  const full = picked.size >= MAX;
+  document.querySelectorAll("#groups input").forEach(cb => {
+    cb.checked = picked.has(cb.dataset.id);
+    cb.disabled = full && !cb.checked;
+  });
+  $("submit").disabled = busy || picked.size === 0;
+}
+function setStatus(text, err) { const m = $("status"); m.textContent = text; m.className = "msg" + (err ? " err" : ""); }
+
+function showThanks() {
+  $("ballot").hidden = true;
+  $("thanks").hidden = false;
+  $("thanks").scrollIntoView({ behavior: "smooth", block: "start" });
+  $("thanks").focus({ preventScroll: true });
+}
+function showBallot() {
+  $("thanks").hidden = true;
+  $("ballot").hidden = false;
+  setStatus("");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function submit(e) {
+  e.preventDefault();
+  if (busy || picked.size === 0) return;
+  const songs = SONGS.map(s => s.id).filter(id => picked.has(id));
+  const payload = { token, songs, nick: $("nick").value.trim(), comment: $("comment").value.trim(), hp: $("hp").value };
+  busy = true; refresh(); setStatus("送信中…");
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 20000);
+  try {
+    if (!ENDPOINT || ENDPOINT.indexOf("PASTE_") === 0) throw new Error("endpoint not set");
+    /* Apps Script は他サイトからの返答を読ませないので、送れたかどうかは通信の成否で判断します。 */
+    await fetch(ENDPOINT, {
+      method: "POST", mode: "no-cors", signal: ctl.signal,
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    store.set("hamulive_last", JSON.stringify({ songs, nick: payload.nick, comment: payload.comment }));
+    showThanks();
+  } catch (err) {
+    setStatus("送信できませんでした。通信状況を確認して、もう一度押してください。", true);
+  } finally {
+    clearTimeout(timer);
+    busy = false; refresh();
+  }
+}
+
+build();
+let last = null;
+try { last = JSON.parse(store.get("hamulive_last") || "null"); } catch (e) {}
+if (last) {
+  (last.songs || []).forEach(id => { if (id in byId) picked.add(id); });
+  $("nick").value = last.nick || "";
+  $("comment").value = last.comment || "";
+}
+refresh();
+if (last) showThanks();
+$("form").addEventListener("submit", submit);
+$("redo").addEventListener("click", showBallot);
+</script>
+</body>
+</html>
